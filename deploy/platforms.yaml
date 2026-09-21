@@ -1,0 +1,146 @@
+# Supported build matrix.
+#
+# Three honest values are used, and they mean exactly this:
+#
+#   supported    — exercised by CI on every pull request (.github/workflows/ci.yml)
+#                  and expected to work. A failure here is a bug.
+#   best-effort  — not covered by CI. The code has no obvious platform-specific
+#                  path for it and it may well work, but nobody has confirmed it
+#                  and a bug report will be looked at rather than guaranteed.
+#   unsupported  — known not to work, or known not to be attempted. Do not file a
+#                  bug report asking for it; file a proposal to change this file.
+#
+# This file describes the *outside* of the project (which interpreters and
+# machines it runs on). It says nothing about the physics or biology of the
+# model, which is unvalidated and described in docs/model-spec.md.
+
+schema_version: 1
+project: conscious-subconscious
+version: "0.1.0"
+repository: https://github.com/onegayunicorn/conscious-subconscious
+
+interpreters:
+  python:
+    # requires-python = ">=3.10" in pyproject.toml. The ceiling at 3.13 is a
+    # statement about what has been tested, not about what the code forbids.
+    minimum: "3.10"
+    supported:
+      - "3.10"
+      - "3.11"
+      - "3.12"
+      - "3.13"
+    best_effort:
+      - "3.14"   # not released at the time of writing; no CI coverage
+    unsupported:
+      - "3.9"    # uses PEP 604 unions and dataclass slots throughout
+      - "2.7"
+    tested_in_ci: ["3.10", "3.11", "3.12", "3.13"]
+  node:
+    # Both web workspaces and the CI web job use Node 20.
+    supported: ["20"]
+    best_effort: ["18", "22"]
+    unsupported: ["16"]
+    tested_in_ci: ["20"]
+
+# ---------------------------------------------------------------------------
+# The simulation core (no third-party runtime dependencies).
+# ---------------------------------------------------------------------------
+core:
+  status: supported
+  os_arch:
+    linux-x86_64: supported
+    linux-aarch64: best_effort
+    macos-arm64: supported
+    macos-x86_64: supported
+    windows-x86_64: supported
+    windows-arm64: best_effort
+  note: >-
+    The engine uses only the standard library, so the platform risk is confined
+    to the interpreter and the filesystem. CI runs ubuntu-latest on 3.10-3.13,
+    and macOS and Windows at 3.11 and 3.13.
+
+# ---------------------------------------------------------------------------
+# Optional extras. Each is isolated: installing one never pulls the others in.
+# ---------------------------------------------------------------------------
+extras:
+  api:
+    packages: [fastapi, uvicorn, pydantic]
+    status: best_effort
+    note: >-
+      The service layer is not implemented in this repository yet
+      (conscious_subconscious.services.api is referenced by pyproject.toml and
+      the deployment manifests but does not exist). The dependencies install on
+      every supported interpreter; there is no code to exercise them.
+
+  devices:
+    packages: [pyserial, pylsl, bleak]
+    status: best_effort
+    os_support:
+      linux-x86_64: best_effort
+      linux-aarch64: best_effort
+      macos-arm64: best_effort
+      macos-x86_64: best_effort
+      windows-x86_64: best_effort
+      windows-arm64: unsupported
+    note: >-
+      pylsl and bleak are the fragile parts: Bluetooth stacks differ per OS and
+      LSL needs a liblsl binary alongside the Python wrapper. The pure parsing
+      functions (parse_line, parse_heart_rate_measurement, rmssd_ms,
+      hrv_index_from_rmssd) are dependency-free and are the parts CI can cover
+      without hardware. No adapter has been tested against physical sensors by
+      this project.
+
+  science:
+    packages: [numpy, matplotlib]
+    status: supported
+    note: >-
+      Wheels exist for every supported interpreter and architecture. SciPy is
+      deliberately NOT used; the engine is hand-written precisely so it can run
+      without any numerical stack.
+
+  dev:
+    packages: [pytest, pytest-cov, ruff, mypy, build, jsonschema]
+    status: supported
+
+tested_combinations:
+  # Exactly what CI covers. Everything outside this list is best-effort.
+  - os: ubuntu-latest
+    arch: x86_64
+    python: ["3.10", "3.11", "3.12", "3.13"]
+  - os: macos-latest
+    arch: arm64
+    python: ["3.11", "3.13"]
+  - os: windows-latest
+    arch: x86_64
+    python: ["3.11", "3.13"]
+
+containers:
+  base_image: python:3.12-slim
+  python_minor_pinned: "3.12"
+  platforms: [linux/amd64, linux/arm64]
+  registry: ghcr.io/onegayunicorn/conscious-subconscious
+  status: best_effort
+  note: >-
+    The multi-arch image is built in CI for both platforms, but only on tags is
+    it pushed and only the amd64 variant has been run by a human. The arm64
+    variant is cross-built under QEMU and has not been executed.
+
+what_has_actually_been_tested:
+  - "cs-sim (all subcommands) on Linux x86_64, CPython 3.12."
+  - "The test suite, ruff and mypy on the CI matrix listed above."
+  - "Docker image build for linux/amd64 via buildx."
+  - "Docker image build for linux/arm64 via QEMU (build only, never started)."
+
+what_has_not_been_tested:
+  - "Any hardware adapter against a physical device."
+  - "The API service (it does not exist yet)."
+  - "The web console and the marketing site (workspaces not present yet)."
+  - "Kubernetes manifests against a live cluster."
+  - "systemd units on a real host."
+  - "Any load, soak, fuzz or chaos testing."
+  - "FreeBSD, illumos or any non-Linux/macOS/Windows platform."
+
+boundary: >-
+  conscious-subconscious is an educational and artistic simulation. It is not a
+  medical device, not clinical evidence and not medical advice. The model encodes
+  an unvalidated assumption. See DISCLAIMER.md.

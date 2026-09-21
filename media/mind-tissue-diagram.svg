@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" width="1200" height="700" role="img" aria-labelledby="dtTitle dtDesc">
+  <title id="dtTitle">conscious-subconscious reference architecture</title>
+  <desc id="dtDesc">Tissue at the centre, subconscious homeostatic loop at left, conscious attention loop at right, mediator field beneath, hardware and protocol boundary at the bottom.</desc>
+
+  <defs>
+    <marker id="arrMint" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#7FD1C1"/>
+    </marker>
+    <marker id="arrAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#F2A65A"/>
+    </marker>
+    <marker id="arrTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#2E7D9A"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="700" fill="#0B1C2C"/>
+
+  <text x="48" y="48" font-family="Inter, Helvetica, Arial, sans-serif" font-size="26" font-weight="600" fill="#E9EEF2">conscious-subconscious &#8212; reference architecture</text>
+  <text x="48" y="78" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#7FD1C1">Two interacting control processes applied to a modelled tissue. Educational and artistic simulation only.</text>
+  <text x="48" y="98" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#E9EEF2" opacity="0.72">Not a medical device, not clinical evidence, not medical advice. All parameters are invented and unvalidated.</text>
+
+  <!-- Subconscious system -->
+  <rect x="48" y="120" width="290" height="280" rx="20" fill="#123A5A" stroke="#2E7D9A" stroke-width="2"/>
+  <text x="72" y="156" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="1.6" fill="#7FD1C1">SUBCONSCIOUS SYSTEM</text>
+  <text x="72" y="180" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#E9EEF2" opacity="0.85">autonomous homeostasis</text>
+  <text x="72" y="212" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#E9EEF2" opacity="0.9">monotone repair step</text>
+  <text x="72" y="236" font-family="IBM Plex Mono, Menlo, Consolas, monospace" font-size="11.5" fill="#E9EEF2" opacity="0.9">damage = damage * rate</text>
+  <text x="72" y="260" font-family="IBM Plex Mono, Menlo, Consolas, monospace" font-size="11.5" fill="#E9EEF2" opacity="0.9">rate = 0.5  [invented]</text>
+  <text x="72" y="284" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#E9EEF2" opacity="0.9">no attention budget spent</text>
+  <text x="72" y="308" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#E9EEF2" opacity="0.9">runs every tick</text>
+  <text x="72" y="332" font-family="IBM Plex Mono, Menlo, Consolas, monospace" font-size="11.5" fill="#7FD1C1">output: mu_t</text>
+  <text x="72" y="362" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#E9EEF2" opacity="0.65">seeded RNG + virtual clock: reproducible</text>
+
+  <!-- Conscious system -->
+  <rect x="862" y="120" width="290" height="280" rx="20" fill="#123A5A" stroke="#F2A65A" stroke-width="2"/>
+  <text x="886" y="156" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="1.6" fill="#F2A65A">CONSCIOUS SYSTEM</text>
+  <text x="886" y="180" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#E9EEF2" opacity="0.85">deliberate attention</text>
+  <text x="886" y="212" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#E9EEF2" opacity="0.9">finite attention budget B</text>
+  <text x="886" y="236" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#E9EEF2" opacity="0.9">expectancy module</text>
+  <text x="886" y="260" font-family="IBM Plex Mono, Menlo, Consolas, monospace" font-size="11.5" fill="#E9EEF2" opacity="0.9">boost ~ U(1.0, 3.0) [proxy]</text>
+  <text x="886" y="284" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#E9EEF2" opacity="0.9">cost grows with use</text>
+  <text x="886" y="308" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#E9EEF2" opacity="0.9">optional external input</text>
+  <text x="886" y="332" font-family="IBM Plex Mono, Menlo, Consolas, monospace" font-size="11.5" fill="#F2A65A">output: c_t</text>
+  <text x="886" y="362" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#E9EEF2" opacity="0.65">default values arbitrary, not calibrated</text>
+
+  <!-- Tissue -->
+  <circle cx="600" cy="250" r="112" fill="#0B1C2C" stroke="#7FD1C1" stroke-width="6"/>
+  <text x="600" y="238" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="1.4" fill="#E9EEF2">TISSUE</text>
+  <text x="600" y="264" text-anchor="middle" font-family="IBM Plex Mono, Menlo, Consolas, monospace" font-size="12.5" fill="#7FD1C1">damage_level in [0,1]</text>
+  <text x="600" y="288" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#E9EEF2" opacity="0.66">modelled region, not a subject</text>
+
+  <!-- Arrows: loops to tissue -->
+  <path d="M344 250 L480 250" fill="none" stroke="#7FD1C1" stroke-width="3" marker-end="url(#arrMint)"/>
+  <text x="412" y="236" text-anchor="middle" font-family="IBM Plex Mono, Menlo, Consolas, monospace" font-size="11" fill="#7FD1C1">repair</text>
+  <path d="M720 250 L856 250" fill="none" stroke="#F2A65A" stroke-width="3" marker-end="url(#arrAmber)"/>
+  <text x="788" y="236" text-anchor="middle" font-family="IBM Plex Mono, Menlo, Consolas, monospace" font-size="11" fill="#F2A65A">attention</text>
+
+  <!-- Mediator field -->
+  <rect x="360" y="430" width="480" height="100" rx="18" fill="#2E7D9A" opacity="0.22"/>
+  <rect x="360" y="430" width="480" height="100" rx="18" fill="none" stroke="#2E7D9A" stroke-width="2"/>
+  <text x="600" y="464" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="1.6" fill="#7FD1C1">MEDIATOR FIELD</text>
+  <text x="600" y="490" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#E9EEF2" opacity="0.92">ATP &#183; cytokines &#183; growth factors &#183; perfusion &#183; neural drive</text>
+  <text x="600" y="510" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#E9EEF2" opacity="0.66">modelled signalling variables, not measurements</text>
+
+  <path d="M600 366 L600 424" fill="none" stroke="#2E7D9A" stroke-width="3" marker-end="url(#arrTeal)"/>
+  <path d="M193 404 L193 470 L352 470" fill="none" stroke="#7FD1C1" stroke-width="3" marker-end="url(#arrMint)"/>
+  <path d="M1007 404 L1007 470 L852 470" fill="none" stroke="#F2A65A" stroke-width="3" marker-end="url(#arrAmber)"/>
+
+  <!-- Hardware / protocol boundary -->
+  <path d="M600 534 L600 566" fill="none" stroke="#7FD1C1" stroke-width="2.5" stroke-dasharray="10 7" marker-end="url(#arrMint)"/>
+  <rect x="48" y="574" width="1104" height="90" rx="16" fill="none" stroke="#7FD1C1" stroke-width="2.5" stroke-dasharray="12 8"/>
+  <text x="72" y="608" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="1.5" fill="#7FD1C1">HARDWARE / PROTOCOL BOUNDARY</text>
+  <text x="72" y="634" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#E9EEF2" opacity="0.92">JSON-Schema envelope &#183; FastAPI service layer &#183; LSL / BLE heart-rate / serial bridge &#183; Docker &#183; Kubernetes</text>
+  <text x="72" y="654" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#E9EEF2" opacity="0.66">Simulated or replayed data only. An input channel is not evidence.</text>
+</svg>

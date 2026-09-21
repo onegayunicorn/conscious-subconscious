@@ -1,0 +1,88 @@
+# Default-deny, then allow exactly what is needed.
+#
+# A NetworkPolicy is only enforced by a CNI that implements NetworkPolicy
+# (Calico, Cilium, Antrea, ...). On a cluster whose CNI does not, these objects
+# are accepted by the API server and do nothing. Check before relying on them.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: conscious-subconscious
+  labels:
+    app.kubernetes.io/name: conscious-subconscious
+spec:
+  # An empty podSelector selects every pod in the namespace.
+  podSelector: {}
+  # Both directions. egress is included because a pod that can reach the
+  # internet is a pod that can exfiltrate a sensor recording, and nothing in
+  # this deployment needs to make an outbound connection.
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-ingress
+  namespace: conscious-subconscious
+  labels:
+    app.kubernetes.io/name: conscious-subconscious
+    app.kubernetes.io/component: api
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: api
+  policyTypes:
+    - Ingress
+  ingress:
+    # 1. The ingress controller namespace. This is the only external path in.
+    #    Replace `ingress-nginx` with the controller in use; the label
+    #    kubernetes.io/metadata.name is set automatically by Kubernetes since
+    #    v1.21 for every namespace.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - port: 8080
+          protocol: TCP
+    # 2. Same-namespace callers, i.e. the HPA's metrics path and any future
+    #    sidecar. Scoped to this namespace so a compromised pod elsewhere cannot
+    #    reach the API by IP.
+    - from:
+        - podSelector: {}
+      ports:
+        - port: 8080
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-egress
+  namespace: conscious-subconscious
+  labels:
+    app.kubernetes.io/name: conscious-subconscious
+    app.kubernetes.io/component: api
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: api
+  policyTypes:
+    - Egress
+  egress:
+    # DNS. Without this, everything else fails in a way that looks like a
+    # service bug.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Same-namespace traffic, for a future sidecar or the console. Note that
+    # this project's hardware adapters are read-only and never connect out.
+    - to:
+        - podSelector: {}

@@ -1,0 +1,53 @@
+# Non-secret configuration.
+#
+# Every key here corresponds to a variable documented in .env.example at the
+# repository root, so the two files can be diffed by eye. The secret ones
+# (CS_API_KEY) live in secret.example.yaml instead.
+#
+# Nothing in this ConfigMap makes a medical claim or enables a medical function.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conscious-subconscious-config
+  namespace: conscious-subconscious
+  labels:
+    app.kubernetes.io/name: conscious-subconscious
+    app.kubernetes.io/component: api
+data:
+  # --- API service --------------------------------------------------------
+  # Loopback-equivalent inside the pod: the only traffic that reaches this port
+  # is from the ingress / sidecar on the pod network, gated by NetworkPolicy.
+  CS_HOST: "0.0.0.0"
+  CS_PORT: "8080"
+  CS_LOG_LEVEL: "INFO"
+
+  # Browser origins allowed by CORS. Replace with the real console origin before
+  # exposing this beyond a cluster. Never "*" together with credentials.
+  CS_ALLOWED_ORIGINS: "http://localhost:5173"
+
+  # In-process token bucket: requests per minute per client.
+  CS_RATE_LIMIT_PER_MINUTE: "120"
+
+  # Maximum accepted request body in bytes (1 MiB).
+  CS_MAX_BODY_BYTES: "1048576"
+
+  # --- Simulation defaults ------------------------------------------------
+  CS_DEFAULT_SEED: "20260921"
+  CS_DEFAULT_DT_HOURS: "0.05"
+  CS_DEFAULT_HORIZON_HOURS: "72"
+
+  # --- Storage ------------------------------------------------------------
+  # SQLite data directory, backed by the emptyDir mount in deployment.yaml.
+  # See deploy/README.md: this is not durable storage.
+  CS_DATA_DIR: "/data"
+
+  # Locale catalogs as copied into the image.
+  CS_LOCALES_DIR: "/app/i18n/locales"
+
+  # --- Device adapters ----------------------------------------------------
+  # Left empty on purpose. No hardware is attached to the cluster, and every
+  # adapter is read-only with respect to the wearer: there is no stimulation or
+  # write path to enable.
+  CS_SERIAL_PORT: ""
+  CS_BLE_ADDRESS: ""
+  CS_LSL_STREAM_NAME: "conscious-subconscious"

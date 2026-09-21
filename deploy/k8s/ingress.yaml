@@ -1,0 +1,60 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: conscious-subconscious-api
+  namespace: conscious-subconscious
+  labels:
+    app.kubernetes.io/name: conscious-subconscious
+    app.kubernetes.io/component: api
+  annotations:
+    # Placeholder host and placeholder TLS settings. Nothing here has been
+    # exercised against a real ingress controller, and this project runs no
+    # public instance.
+    #
+    # The rate limits below are ingress-level backstops that sit IN FRONT OF the
+    # service's own in-process token bucket (CS_RATE_LIMIT_PER_MINUTE). They are
+    # conventional values, not tuned ones.
+    nginx.ingress.kubernetes.io/limit-rps: "10"
+    nginx.ingress.kubernetes.io/limit-connections: "20"
+    # 1 MiB matches CS_MAX_BODY_BYTES; rejecting earlier is cheaper.
+    nginx.ingress.kubernetes.io/proxy-body-size: "1m"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        # REPLACE THIS. `.example.invalid` is reserved and will never resolve,
+        # so this manifest cannot accidentally become reachable.
+        - conscious-subconscious.example.invalid
+      secretName: conscious-subconscious-tls
+  rules:
+    - host: conscious-subconscious.example.invalid
+      http:
+        paths:
+          # Only the versioned API surface is published. Documentation lives on
+          # GitHub Pages; the console is a separate deployment and is not served
+          # from here.
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service:
+                name: conscious-subconscious-api
+                port:
+                  name: http
+          # Health endpoints are exposed so an external prober can tell the
+          # difference between "the ingress path is broken" and "the service is
+          # down". They carry no data.
+          - path: /healthz
+            pathType: Exact
+            backend:
+              service:
+                name: conscious-subconscious-api
+                port:
+                  name: http
+          - path: /readyz
+            pathType: Exact
+            backend:
+              service:
+                name: conscious-subconscious-api
+                port:
+                  name: http

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/onegayunicorn/conscious-subconscious/protocols/schemas/sim-command.schema.json",
+  "title": "sim.command payload",
+  "description": "A control command applied to a running simulation. Note what is absent: there is no command that sets tissue integrity. Nothing may bypass the repair rule, not even an operator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["command"],
+  "properties": {
+    "command": {
+      "type": "string",
+      "enum": ["focus", "release", "set_policy", "step", "run", "snapshot"],
+      "description": "'focus', 'release', 'step', 'run' and 'snapshot' are safe and reversible. 'set_policy' changes the focus policy for the remainder of the run."
+    },
+    "target": {
+      "type": "string",
+      "maxLength": 128,
+      "description": "Focus target, defaults to the tissue name. Only meaningful with command='focus'."
+    },
+    "policy": {
+      "type": "string",
+      "enum": ["never", "always", "intermittent"],
+      "description": "Required when command='set_policy'."
+    }
+  }
+}

@@ -1,0 +1,26 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/onegayunicorn/conscious-subconscious/security/advisories/new
+    about: >-
+      Report a vulnerability privately through GitHub's private vulnerability
+      reporting. Please do not open a public issue. No dedicated security email
+      address is configured for this project yet; SECURITY.md explains the
+      current state.
+  - name: Read the disclaimer first
+    url: https://github.com/onegayunicorn/conscious-subconscious/blob/main/DISCLAIMER.md
+    about: >-
+      This project is an educational and artistic simulation. It is not a
+      medical device, not clinical evidence and not medical advice. Issues that
+      request medical capability will be closed.
+  - name: Read the model specification
+    url: https://github.com/onegayunicorn/conscious-subconscious/blob/main/docs/model-spec.md
+    about: >-
+      The equations, the symbol-to-parameter-key mapping and the table of which
+      parameters carry empirical support and which do not.
+  - name: Questions and discussion
+    url: https://github.com/onegayunicorn/conscious-subconscious/discussions
+    about: >-
+      For open-ended questions about the model, the protocol or how to extend
+      the project. Discussions may not be enabled on this repository yet; if the
+      link 404s, use an issue with the feature request template.

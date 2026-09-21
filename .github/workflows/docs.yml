@@ -1,0 +1,70 @@
+name: docs
+
+on:
+  push:
+    branches: [main]
+    # Only the docs source. Files outside docs_dir (security/, research/,
+    # DISCLAIMER.md) are linked from the site as absolute GitHub URLs, because
+    # MkDocs cannot include them without a second docs_dir.
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build mkdocs site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install mkdocs
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "mkdocs-material>=9.5"
+
+      - name: Build
+        # --strict turns a broken internal link or a missing nav page into a
+        # failed build rather than a silently dead link on the published site.
+        run: mkdocs build --strict
+
+      - uses: actions/configure-pages@v5
+        id: pages
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: deploy to GitHub Pages
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

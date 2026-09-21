@@ -1,0 +1,96 @@
+# Dependabot configuration.
+#
+# Version updates are grouped so that a routine bump produces one pull request
+# per ecosystem instead of a dozen. Security updates are not grouped here: a
+# single advisory should be visible on its own.
+#
+# Every pull request Dependabot opens still has to pass the provenance checklist
+# in .github/PULL_REQUEST_TEMPLATE.md. A dependency bump is not exempt from it —
+# a new transitive dependency inside an optional extra is a real change to what
+# the project ships.
+
+version: 2
+updates:
+  # ------------------------------------------------------------------ Python
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    versioning-strategy: increase-if-necessary
+    labels: ["dependencies", "python"]
+    commit-message:
+      prefix: "deps(python)"
+    groups:
+      # The core package has no runtime dependencies, so everything below is an
+      # optional extra or build tooling.
+      python-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
+    ignore:
+      # The project supports 3.10 through 3.13 and the matrix in
+      # .github/workflows/ci.yml is the source of truth for that range. Do not
+      # let a bot widen it silently.
+      - dependency-name: "python"
+      # mypy is pinned to a Python version target in pyproject.toml
+      # ([tool.mypy] python_version = "3.10"); a major bump needs a human.
+      - dependency-name: "mypy"
+        update-types: ["version-update:semver-major"]
+
+  # ------------------------------------------------- TypeScript / npm (apps)
+  - package-ecosystem: npm
+    directory: "/apps/console"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "javascript", "console"]
+    commit-message:
+      prefix: "deps(console)"
+    groups:
+      console-dev-minor-patch:
+        applies-to: version-updates
+        dependency-type: development
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: npm
+    directory: "/apps/site"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "javascript", "site"]
+    commit-message:
+      prefix: "deps(site)"
+    groups:
+      site-dev-minor-patch:
+        applies-to: version-updates
+        dependency-type: development
+        update-types: ["minor", "patch"]
+
+  # -------------------------------------------------------------- Containers
+  - package-ecosystem: docker
+    directory: "/deploy/docker"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels: ["dependencies", "docker"]
+    commit-message:
+      prefix: "deps(docker)"
+
+  # ---------------------------------------------------------- GitHub Actions
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "github-actions"]
+    commit-message:
+      prefix: "deps(actions)"
+    groups:
+      actions-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]

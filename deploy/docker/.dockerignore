@@ -1,0 +1,71 @@
+# Docker build exclusions for the conscious-subconscious service image.
+#
+# WARNING — placement matters. Docker reads `.dockerignore` from the BUILD
+# CONTEXT root, which for this project is the repository root (see the `context:`
+# key in docker-compose.yml and `-f deploy/docker/Dockerfile ... .` in the
+# Makefile). A `.dockerignore` in this directory is therefore NOT consulted by
+# the daemon; the equivalent file has to live at the repository root. It is kept
+# here as the editable source of truth for that file and so the exclusions are
+# documented next to the Dockerfile that depends on them. See deploy/README.md.
+
+# Version control and CI
+.git
+.gitignore
+.github
+
+# Node / web workspaces: never part of the Python image
+node_modules
+**/node_modules
+apps/*/node_modules
+**/dist
+**/build
+**/.vite
+**/*.tsbuildinfo
+
+# Python virtualenvs and caches
+.venv
+venv
+env
+**/__pycache__
+**/*.py[cod]
+**/*.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+.coverage.*
+htmlcov
+coverage.xml
+
+# Local runtime state and generated artefacts
+out
+runs
+tmp
+*.sqlite3
+*.db
+sbom.json
+sbom.spdx.json
+deploy/out
+site
+
+# Secrets: never copied into an image layer, even a throwaway one
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+
+# Editors and OS noise
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+
+# Documentation and research material are not needed to run the service
+docs
+research
+marketing
+media
+site
+mkdocs.yml

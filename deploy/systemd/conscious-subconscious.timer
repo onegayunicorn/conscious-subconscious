@@ -1,0 +1,36 @@
+# conscious-subconscious — schedule for the oneshot simulation unit.
+#
+#   sudo systemctl enable --now conscious-subconscious.timer
+#   systemctl list-timers conscious-subconscious.timer
+#   journalctl -u conscious-subconscious.service -n 50
+#
+# The schedule is arbitrary and can be changed freely: every run is reproducible
+# from the recorded seed and parameters, so running more or less often changes
+# only how many reports exist, never what they say.
+
+[Unit]
+Description=conscious-subconscious scheduled simulation run
+Documentation=https://github.com/onegayunicorn/conscious-subconscious
+
+[Timer]
+Unit=conscious-subconscious.service
+
+# Daily, at 03:30 local time. Deliberately off the hour: a job that starts at
+# :00 competes with every other job that starts at :00.
+OnCalendar=*-*-* 03:30:00
+
+# If the machine was off or asleep at the scheduled moment, run once on the next
+# boot rather than skipping the interval entirely.
+Persistent=true
+
+# Spread the start over up to 10 minutes so that fleets of machines do not all
+# begin a CPU-bound run at the same instant.
+RandomizedDelaySec=600
+AccuracySec=1min
+
+# Two runs never overlap: systemd will not start a unit that is already active,
+# and a duplicate run would only burn CPU for an identical result (runs are
+# deterministic). No extra concurrency directive is needed.
+
+[Install]
+WantedBy=timers.target

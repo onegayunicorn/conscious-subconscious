@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: conscious-subconscious-api
+  namespace: conscious-subconscious
+  labels:
+    app.kubernetes.io/name: conscious-subconscious
+    app.kubernetes.io/component: api
+spec:
+  # ClusterIP only. Nothing is published on the node network: external access
+  # goes through ingress.yaml, which itself assumes a TLS-terminating ingress
+  # controller. Do not change this to NodePort or LoadBalancer without also
+  # setting CS_API_KEY and reviewing security/threat-model.md.
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: conscious-subconscious
+    app.kubernetes.io/component: api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP

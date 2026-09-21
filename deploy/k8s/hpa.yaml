@@ -1,0 +1,36 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: conscious-subconscious-api
+  namespace: conscious-subconscious
+  labels:
+    app.kubernetes.io/name: conscious-subconscious
+    app.kubernetes.io/component: api
+  annotations:
+    # HONESTY NOTE: the thresholds below are conventional starting values, not
+    # measured ones. No load testing has been performed on this service, there
+    # are no latency or throughput targets, and no capacity planning has been
+    # done. Treat this file as a placeholder that has to be replaced with
+    # numbers from an actual load test before it means anything.
+    conscious-subconscious/unverified: "no load testing has been performed"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: conscious-subconscious-api
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+  behavior:
+    # Sweeps are CPU-bound and take time; scaling in aggressively would kill
+    # long requests. Scale out quickly, scale in slowly.
+    scaleUp:
+      stabilizationWindowSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 600

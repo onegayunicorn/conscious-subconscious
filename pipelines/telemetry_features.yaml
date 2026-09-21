@@ -1,0 +1,68 @@
+# Feature extraction from a recorded telemetry session.
+#
+# Input is a CSV with the same shape the serial and BLE adapters emit, so a
+# recording made from live hardware can be processed without conversion:
+#
+#   t_seconds,channel,value
+#   0.000000,heart_rate,62.400000
+#
+# Run with:
+#   python -c "from conscious_subconscious.pipelines import load_pipeline, PipelineRunner; \
+#     print(PipelineRunner(load_pipeline('pipelines/telemetry_features.yaml')) \
+#     .run(workdir='.').as_dict())"
+name: telemetry_features
+version: "1"
+description: >
+  Validate a recording, resample the heart-rate channel onto a uniform grid, and
+  produce descriptive plus spectral features for every channel.
+
+steps:
+  - name: raw
+    uses: load_csv
+    params:
+      path: samples/session.csv
+
+  - name: clean
+    uses: validate
+    needs: [raw]
+    params:
+      source: raw
+      min_rows: 10
+      max_duplicate_timestamps: 0
+
+  - name: heart_rate_uniform
+    uses: resample
+    needs: [clean]
+    params:
+      source: clean
+      channel: heart_rate
+      rate_hz: 1.0
+
+  # Bands are label-only. They are NOT clinical HRV bands and nothing downstream
+  # should treat them as such; they are here to demonstrate the spectral step.
+  - name: features
+    uses: features
+    needs: [clean]
+    params:
+      source: clean
+      bands:
+        - name: low
+          low_hz: 0.04
+          high_hz: 0.15
+        - name: high
+          low_hz: 0.15
+          high_hz: 0.40
+
+  - name: report
+    uses: summarise
+    needs: [features, heart_rate_uniform]
+    params:
+      sources: [features, heart_rate_uniform]
+
+  - name: out
+    uses: write_json
+    needs: [report]
+    params:
+      source: report
+      path: out/telemetry_features.json
+      keys: [features, channels, rate_hz, count]

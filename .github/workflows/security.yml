@@ -1,0 +1,89 @@
+name: security
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  schedule:
+    # Weekly, so a newly disclosed advisory reaches the repository even during
+    # a quiet period with no commits.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: secret scanning (gitleaks)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: a secret that was removed in a later commit is still
+          # a leaked secret.
+          fetch-depth: 0
+
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  pip-audit:
+    name: pip-audit on the built wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Build the wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel
+
+      - name: Audit the wheel's dependency closure
+        # The core package declares no runtime dependencies at all, so with no
+        # extras this audit is expected to be empty. It exists to catch a
+        # transitive dependency arriving through a future override, and to keep
+        # that statement verifiable rather than aspirational.
+        run: |
+          python -m venv audit-venv
+          audit-venv/bin/python -m pip install --upgrade pip
+          audit-venv/bin/python -m pip install dist/*.whl pip-audit
+          audit-venv/bin/python -m pip_audit --strict --desc
+
+      - name: Audit the optional extras in isolation
+        # Each extra is audited separately so a finding is attributable to the
+        # extra that pulled it in, and so an unavailable-platform extra (pylsl,
+        # bleak) cannot hide a real finding elsewhere.
+        continue-on-error: true
+        run: |
+          for extra in api devices science; do
+            echo "--- auditing extra: ${extra}"
+            python -m venv "audit-${extra}"
+            "audit-${extra}/bin/python" -m pip install --upgrade pip
+            "audit-${extra}/bin/python" -m pip install ".[${extra}]" pip-audit
+            "audit-${extra}/bin/python" -m pip_audit --strict --desc || echo "extra ${extra} reported findings"
+          done
+
+  dependency-review:
+    name: dependency review (pull requests only)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          comment-summary-in-pr: on-failure

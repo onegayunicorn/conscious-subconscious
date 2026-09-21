@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">conscious-subconscious</title>
+  <desc id="logoDesc">A smooth homeostatic curve crossed by a focused signal pulse.</desc>
+
+  <rect x="0" y="0" width="512" height="512" rx="96" fill="#0B1C2C"/>
+  <circle cx="256" cy="256" r="152" fill="#2E7D9A" opacity="0.12"/>
+  <circle cx="256" cy="256" r="188" fill="none" stroke="#123A5A" stroke-width="8"/>
+
+  <path d="M100 256 C130 184 174 184 204 256 S278 328 308 256 S382 184 412 256"
+        fill="none" stroke="#2E7D9A" stroke-width="24" stroke-linecap="round" opacity="0.40"/>
+  <path d="M100 256 C130 184 174 184 204 256 S278 328 308 256 S382 184 412 256"
+        fill="none" stroke="#7FD1C1" stroke-width="12" stroke-linecap="round"/>
+
+  <path d="M256 96 L256 212 L276 250 L256 288 L256 416"
+        fill="none" stroke="#F2A65A" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <circle cx="256" cy="310" r="10" fill="#F2A65A" stroke="#0B1C2C" stroke-width="5"/>
+</svg>

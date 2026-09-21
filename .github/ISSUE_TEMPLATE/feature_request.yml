@@ -1,0 +1,69 @@
+name: Feature request
+description: Propose a change that is not a change to the modelled behaviour.
+title: "[feature] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If your proposal changes the *modelled behaviour* — an equation, a
+        parameter, a module or the step order — use the **Model change** template
+        instead. It asks for the provenance information this project requires.
+
+        Requests for medical, clinical, diagnostic or therapeutic capability
+        will be closed. The project is explicitly not a medical device.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI (cs-sim)
+        - Simulation engine / model layer
+        - Protocol layer (envelope, codecs, topics, JSON-RPC)
+        - Device adapters (read-only only)
+        - API service
+        - Web console
+        - Deployment (Docker, Kubernetes, systemd)
+        - Tooling and CI
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is awkward, missing or wrong today? Concrete is better than aspirational.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints this project holds
+      description: Confirm the proposal is compatible with these.
+      options:
+        - label: The core package keeps zero third-party runtime dependencies (any new dependency is confined to an optional extra).
+          required: true
+        - label: Any hardware capability involved remains read-only with respect to the wearer — no stimulation, actuation or write path.
+          required: true
+        - label: The proposal does not introduce pricing, checkout, subscriptions or payment integrations.
+          required: true
+        - label: The proposal does not introduce a medical or clinical claim.
+          required: true

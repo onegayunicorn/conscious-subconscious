@@ -1,0 +1,102 @@
+name: Model change
+description: Propose a change to the modelled behaviour. This template is mandatory for anything that alters equations, parameters, modules or step order.
+title: "[model] "
+labels: ["model-change", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A model change is a change to what the simulation asserts. Because this
+        project's stated value is that its assumptions are labelled rather than
+        hidden, a model change without provenance information cannot be merged.
+
+        Read `docs/model-spec.md` (the equations and the symbol table) and
+        `docs/provenance.md` (what the grades mean) before filling this in.
+
+        **No medical claims.** Nothing in a model change may imply that attention,
+        focus, visualisation or expectancy affects real tissue repair in a human.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of change
+      options:
+        - New parameter
+        - Changed default value of an existing parameter
+        - Changed provenance grade of an existing parameter
+        - Changed equation in `model/subconscious.py`
+        - Changed dynamics in `model/conscious.py`
+        - Changed the mediator field or its channels
+        - New or changed module
+        - Changed step order in `model/engine.py`
+        - Changed a metric definition in `model/metrics.py`
+        - Changed the tissue abstraction in `model/tissue.py`
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What changes in the model
+      description: In plain words. Where the change is an equation, write the new equation here as well as in `docs/model-spec.md`.
+    validations:
+      required: true
+
+  - type: textarea
+    id: parameters-changed
+    attributes:
+      label: Which parameters change, and their provenance
+      description: |
+        List every parameter key affected. For each one give: the current value,
+        the proposed value, the current provenance grade, the proposed provenance
+        grade, and the justification for that grade.
+
+        Remember that a runtime override always downgrades a parameter to
+        `assumed` (see `core/params.py::ParameterSet.with_overrides`) — a
+        proposal that only works when a value is passed with `--set` is not a
+        change to the model's defaults.
+      value: |
+        | Parameter key | Old value | New value | Old grade | New grade | Justification |
+        | --- | --- | --- | --- | --- | --- |
+        |  |  |  |  |  |  |
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence, and its grade
+      description: |
+        Every parameter declared `measured` or `literature` in
+        `src/conscious_subconscious/parameters.py` needs a citation in
+        `research/` or a measurement produced inside this repository. Paste the
+        citation here. If there is none, say so plainly — `assumed` and
+        `invented` are honest answers and this project uses them.
+    validations:
+      required: true
+
+  - type: textarea
+    id: consequences
+    attributes:
+      label: What changes in the results
+      description: |
+        Which scenarios change, and in which direction? Include the
+        `cs-sim run` / `cs-sim compare` digests before and after if you have
+        them. If the change flips the sign of the headline conclusion anywhere,
+        say so explicitly.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Required checks
+      options:
+        - label: I have updated `docs/model-spec.md` (equations, symbol table, provenance table).
+          required: true
+        - label: I have not asserted that the model is now validated, calibrated to real data, or clinically meaningful.
+          required: true
+        - label: I understand the step order in `model/engine.py` is part of the model, and I have explained any change to it.
+          required: true
+        - label: The change does not give any component a way to set tissue integrity other than the repair rule in `SubconsciousSystem.step`.
+          required: true

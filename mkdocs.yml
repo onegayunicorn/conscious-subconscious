@@ -1,0 +1,108 @@
+# MkDocs configuration for the published documentation site.
+#
+# Built and deployed by .github/workflows/docs.yml to GitHub Pages.
+#
+#   pip install "mkdocs-material>=9.5"
+#   mkdocs build --strict      # what CI runs
+#   mkdocs serve               # local preview on http://127.0.0.1:8000
+#
+# NOTE on `!!python/name:` below: the mermaid custom-fence format is a Python
+# callable, which is the documented MkDocs mechanism and is what MkDocs' own YAML
+# loader supports. It is NOT supported by a plain `yaml.safe_load`, so a generic
+# YAML linter — including the `check-yaml` hook in .pre-commit-config.yaml — will
+# reject this file. Add `--unsafe` to that hook's args or exclude `mkdocs.yml`
+# from it; do not "fix" this line, or Mermaid diagrams stop rendering.
+#
+# Diagrams are only used in docs/architecture.md, and they are small on purpose.
+
+site_name: conscious-subconscious
+site_url: https://onegayunicorn.github.io/conscious-subconscious/
+site_description: >-
+  A reproducible simulation sandbox for modelling subconscious (homeostatic) and
+  conscious (attentional) processes during tissue repair. Educational and artistic
+  simulation only — not a medical device, not clinical evidence, not medical advice.
+site_author: onegayunicorn
+
+repo_url: https://github.com/onegayunicorn/conscious-subconscious
+repo_name: onegayunicorn/conscious-subconscious
+edit_uri: edit/main/docs/
+copyright: >-
+  Educational and artistic simulation only. Not a medical device, not clinical
+  evidence, not medical advice. MIT licensed.
+
+docs_dir: docs
+strict: true
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+  palette:
+    # Two palettes, following the brand palette in media/brand.md: a calm dark
+    # base with a single warm accent reserved for the conscious signal. No
+    # wellness vocabulary, no decorative colour.
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - Model specification: model-spec.md
+  - Provenance: provenance.md
+  - Architecture: architecture.md
+  - Protocol: protocol.md
+  - Hardware: hardware.md
+  - Command line: cli.md
+  - API service: api.md
+  - Testing: testing.md
+  - Deployment: deployment.md
+  - FAQ: faq.md
+  - Roadmap: roadmap.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - def_list
+  - footnotes
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.details
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/onegayunicorn/conscious-subconscious
+      name: conscious-subconscious on GitHub

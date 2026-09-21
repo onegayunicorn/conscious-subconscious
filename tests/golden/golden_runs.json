@@ -1,0 +1,97 @@
+{
+  "_comment": "Reference output for the shipped scenarios. Regenerate deliberately with tools/update_golden.py, and only after confirming the change in numbers is intended. Any diff here means the model's numerical behaviour changed.",
+  "dt_hours": 0.1,
+  "horizon_hours": 24.0,
+  "parameter_digest": "fd96482fa3d53268ccdad7e3563c37a9c3c6ccc4ca1ff62fac876740b298b915",
+  "runs": {
+    "baseline": {
+      "config_digest": "8ddf346a9322fd5655fe6508256cfa09ff3d4d8030b802b03eca3083e8865e1d",
+      "metrics": {
+        "area_under_damage_integrity_hours": 16.056666057,
+        "attention_attributable_fraction": 0.0,
+        "attention_attributable_repair": 0.0,
+        "attention_spent": 0.0,
+        "fatigue_episodes": 0,
+        "final_integrity": 0.461703548,
+        "final_perception_gap": -0.001208972,
+        "focus_hours": 0,
+        "mean_integrity": 0.331517463,
+        "min_attention": 1.0,
+        "peak_growth_factor": 5.021956125,
+        "peak_neural_drive": 0.0,
+        "samples": 240,
+        "time_to_50pct_repair_hours": null,
+        "time_to_full_repair_hours": null,
+        "total_repair": 0.261703548
+      },
+      "run_digest": "c9e217dc110ff2661f94cccbad2222e35b44bac61ef5c7704c1c4c40267e77fe"
+    },
+    "focused": {
+      "config_digest": "3ff738a6be739f162fb71bdbe032e068128b4ea6fc97e9a0f662b0b5b3c8c047",
+      "metrics": {
+        "area_under_damage_integrity_hours": 15.018857985,
+        "attention_attributable_fraction": 0.226123533,
+        "attention_attributable_repair": 0.078028011,
+        "attention_spent": 2.79,
+        "fatigue_episodes": 5,
+        "final_integrity": 0.545068069,
+        "final_perception_gap": -0.001679526,
+        "focus_hours": 15.5,
+        "mean_integrity": 0.374933142,
+        "min_attention": 0.244,
+        "peak_growth_factor": 4.931835911,
+        "peak_neural_drive": 0.689430583,
+        "samples": 240,
+        "time_to_50pct_repair_hours": null,
+        "time_to_full_repair_hours": null,
+        "total_repair": 0.345068069
+      },
+      "run_digest": "7f6fb6b98d7a30b1c4198864d38fd358e604296da438820e03fd98159eeed655"
+    },
+    "focused-uncoupled": {
+      "config_digest": "1377c4726d407da4d3942b27b119df1ab3b2add85beb670726e1bc31d58ec4ff",
+      "metrics": {
+        "area_under_damage_integrity_hours": 16.056666057,
+        "attention_attributable_fraction": 0.0,
+        "attention_attributable_repair": 0.0,
+        "attention_spent": 2.79,
+        "fatigue_episodes": 5,
+        "final_integrity": 0.461703548,
+        "final_perception_gap": -0.001208972,
+        "focus_hours": 15.5,
+        "mean_integrity": 0.331517463,
+        "min_attention": 0.244,
+        "peak_growth_factor": 5.021956125,
+        "peak_neural_drive": 0.689430583,
+        "samples": 240,
+        "time_to_50pct_repair_hours": null,
+        "time_to_full_repair_hours": null,
+        "total_repair": 0.261703548
+      },
+      "run_digest": "0f27100e103d4700b751f8916234ce20a79b9ad95d130c4a5f4a01e550942df9"
+    },
+    "intermittent": {
+      "config_digest": "03d1200bcb5de1ba7976a828a153f3369dcc7f5746883df903eb518a5d9eda79",
+      "metrics": {
+        "area_under_damage_integrity_hours": 15.018857985,
+        "attention_attributable_fraction": 0.226123533,
+        "attention_attributable_repair": 0.078028011,
+        "attention_spent": 2.79,
+        "fatigue_episodes": 5,
+        "final_integrity": 0.545068069,
+        "final_perception_gap": -0.001679526,
+        "focus_hours": 15.5,
+        "mean_integrity": 0.374933142,
+        "min_attention": 0.244,
+        "peak_growth_factor": 4.931835911,
+        "peak_neural_drive": 0.689430583,
+        "samples": 240,
+        "time_to_50pct_repair_hours": null,
+        "time_to_full_repair_hours": null,
+        "total_repair": 0.345068069
+      },
+      "run_digest": "2e4333a1b5cf4511e47282b35d9cccf843e165063bda35c7438f3ab343e32f8f"
+    }
+  },
+  "seed": 20260921
+}

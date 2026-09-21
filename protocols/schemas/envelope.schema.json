@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/onegayunicorn/conscious-subconscious/protocols/schemas/envelope.schema.json",
+  "title": "conscious-subconscious protocol envelope",
+  "description": "The wrapper applied to every message on every transport. The Python implementation is src/conscious_subconscious/protocols/envelope.py and the TypeScript consumer is apps/console/src/api/types.ts; this schema is the tie-breaker between them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["v", "id", "ts", "type", "source", "payload"],
+  "properties": {
+    "v": {
+      "const": "1.0.0",
+      "description": "Protocol version. A breaking change bumps this and older peers must refuse rather than guess."
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Unique message identifier, used for de-duplication and correlating JSON-RPC replies."
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp with an explicit UTC offset. Wall-clock time, not simulation time."
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "device.hello",
+        "device.state",
+        "stream.sample",
+        "sim.tick",
+        "sim.command",
+        "session.start",
+        "session.stop",
+        "heartbeat",
+        "error",
+        "jsonrpc"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Component that produced the message, e.g. 'engine' or 'device.heart-rate'."
+    },
+    "session": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]{1,64}$",
+      "description": "Session scope. Same character class as MQTT topics, so a session id can never smuggle in a topic separator or wildcard."
+    },
+    "payload": {
+      "type": "object",
+      "description": "Message-type-specific body, validated against that type's schema. Capped at 262144 serialised bytes."
+    }
+  }
+}

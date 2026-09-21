@@ -1,0 +1,322 @@
+/*
+ * Palette and type from media/brand.md.
+ *   base #0B1C2C · structure #123A5A · process #2E7D9A
+ *   signal #7FD1C1 · accent #F2A65A · text #E9EEF2
+ *
+ * Amber is used for exactly one thing: the conscious/attentional signal. Nowhere
+ * on this page is amber a surface or a decoration.
+ */
+
+:root {
+  --cs-base: #0b1c2c;
+  --cs-structure: #123a5a;
+  --cs-process: #2e7d9a;
+  --cs-mint: #7fd1c1;
+  --cs-amber: #f2a65a;
+  --cs-paper: #e9eef2;
+  --cs-muted: #9fb3c1;
+  --cs-radius: 8px;
+  --cs-font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --cs-font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--cs-base);
+  color: var(--cs-paper);
+  font-family: var(--cs-font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono {
+  font-family: var(--cs-font-mono);
+  font-size: 0.9em;
+}
+
+.page {
+  margin: 0 auto;
+  max-width: 1040px;
+  padding: 40px 24px 64px;
+}
+
+/* --------------------------------------------------------------------- hero */
+.hero {
+  align-items: center;
+  display: grid;
+  gap: 40px;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  padding: 24px 0 40px;
+}
+
+.hero__eyebrow {
+  color: var(--cs-mint);
+  font-family: var(--cs-font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.hero__title {
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.hero__dash {
+  color: var(--cs-amber);
+}
+
+.hero__tagline {
+  color: var(--cs-mint);
+  font-size: 1.15rem;
+  margin: 8px 0 16px;
+}
+
+.hero__lede {
+  color: #c2d3de;
+  margin: 0 0 16px;
+  max-width: 46ch;
+}
+
+.boundary {
+  background: rgba(127, 209, 193, 0.08);
+  border-left: 3px solid var(--cs-mint);
+  border-radius: 0 var(--cs-radius) var(--cs-radius) 0;
+  font-size: 0.9rem;
+  margin: 0 0 20px;
+  padding: 10px 14px;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hero__visual {
+  border-radius: var(--cs-radius);
+  height: auto;
+  width: 100%;
+}
+
+/* ----------------------------------------------------------------- controls */
+.button {
+  background: var(--cs-structure);
+  border: 1px solid var(--cs-process);
+  border-radius: var(--cs-radius);
+  color: var(--cs-paper);
+  padding: 10px 16px;
+  text-decoration: none;
+}
+
+.button:hover {
+  border-color: var(--cs-mint);
+}
+
+.button--primary {
+  background: var(--cs-process);
+  font-weight: 600;
+}
+
+/* -------------------------------------------------------------------- stats */
+.stats {
+  border-bottom: 1px solid var(--cs-structure);
+  border-top: 1px solid var(--cs-structure);
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  padding: 20px 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat__value {
+  color: var(--cs-mint);
+  font-size: 1.6rem;
+}
+
+.stat__label {
+  color: var(--cs-muted);
+  font-size: 0.82rem;
+}
+
+/* ----------------------------------------------------------------- sections */
+.section {
+  padding: 48px 0 8px;
+}
+
+.section__title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.section__lede {
+  color: #c2d3de;
+  margin: 0 0 20px;
+  max-width: 68ch;
+}
+
+.section__note {
+  color: var(--cs-muted);
+  font-size: 0.88rem;
+  margin: 14px 0 0;
+  max-width: 72ch;
+}
+
+.diagram {
+  border-radius: var(--cs-radius);
+  height: auto;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+/* ------------------------------------------------------------------- tables */
+.table-wrap {
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  min-width: 640px;
+  width: 100%;
+}
+
+.table caption {
+  caption-side: top;
+  color: var(--cs-muted);
+  font-size: 0.82rem;
+  padding-bottom: 10px;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid rgba(46, 125, 154, 0.4);
+  padding: 8px 12px 8px 0;
+  text-align: left;
+}
+
+.table thead th {
+  color: var(--cs-mint);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.table tbody th {
+  font-weight: 400;
+}
+
+.table tbody td {
+  color: #d3e0e9;
+  text-align: right;
+}
+
+.table thead th:not(:first-child) {
+  text-align: right;
+}
+
+.row--control {
+  background: rgba(242, 166, 90, 0.08);
+}
+
+/* ------------------------------------------------------ features and lists */
+.features {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.feature {
+  background: var(--cs-structure);
+  border-radius: var(--cs-radius);
+  padding: 18px;
+}
+
+.feature__title {
+  color: var(--cs-mint);
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+
+.feature__body {
+  color: #c8d8e2;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.nots {
+  color: #c8d8e2;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.nots li {
+  margin-bottom: 8px;
+}
+
+/* -------------------------------------------------------------------- code */
+.code {
+  background: var(--cs-structure);
+  border-radius: var(--cs-radius);
+  font-family: var(--cs-font-mono);
+  font-size: 0.85rem;
+  margin: 0;
+  overflow-x: auto;
+  padding: 16px;
+}
+
+/* ------------------------------------------------------------------ footer */
+.footer {
+  border-top: 1px solid var(--cs-structure);
+  color: var(--cs-muted);
+  font-size: 0.85rem;
+  margin-top: 56px;
+  padding-top: 20px;
+}
+
+.footer__boundary {
+  color: var(--cs-paper);
+  margin: 0 0 10px;
+}
+
+.footer a {
+  color: var(--cs-paper);
+  text-decoration-color: var(--cs-process);
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 780px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero__visual {
+    order: -1;
+  }
+
+  .page {
+    padding: 24px 16px 48px;
+  }
+}

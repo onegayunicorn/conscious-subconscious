@@ -1,0 +1,48 @@
+# Local quality gates. Install with:  pre-commit install
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: \.svg$
+      - id: end-of-file-fixer
+        exclude: \.svg$
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=2048]
+      - id: detect-private-key
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.10
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        files: ^src/conscious_subconscious/(core|model|modules|protocols|sim|research)/
+        additional_dependencies: []
+
+  # Stops a real GitHub token, API key or private key from ever entering history.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+
+  - repo: local
+    hooks:
+      - id: locale-parity
+        name: locale key parity
+        entry: python3 tools/check_locales.py
+        language: system
+        pass_filenames: false
+        files: ^i18n/locales/.*\.json$

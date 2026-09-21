@@ -1,0 +1,110 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build sdist + wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Build
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+
+      - name: Check the metadata
+        run: python -m twine check dist/*
+
+      - name: Verify the wheel installs into a clean venv
+        # A wheel that builds but does not install, or installs but cannot run
+        # its entry point, is a broken release. This is the only check that
+        # actually proves the artefact works.
+        run: |
+          python -m venv verify-venv
+          verify-venv/bin/python -m pip install --upgrade pip
+          verify-venv/bin/python -m pip install dist/*.whl
+          verify-venv/bin/cs-sim version
+          verify-venv/bin/cs-sim parameters --unsupported > /dev/null
+          verify-venv/bin/cs-sim compare --out verification-report.md
+          echo "--- verification report (first 20 lines) ---"
+          head -20 verification-report.md
+
+      - name: Confirm the console scripts resolve
+        run: |
+          verify-venv/bin/python -c "import conscious_subconscious as cs; print(cs.__version__)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  github-release:
+    name: attach artefacts to a GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "${GITHUB_REF_NAME}" > /dev/null 2>&1 \
+            || gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes
+          gh release upload "${GITHUB_REF_NAME}" dist/* --clobber
+
+  pypi:
+    name: publish to PyPI (Trusted Publishing)
+    needs: build
+    runs-on: ubuntu-latest
+    # Trusted Publishing uses a GitHub OIDC token instead of a long-lived API
+    # token; `id-token: write` is what makes that possible and is the only
+    # privileged permission this job holds.
+    #
+    # OPERATOR STEP, NOT DONE BY THIS REPOSITORY: a maintainer must first
+    # register this repository as a trusted publisher on PyPI —
+    # https://pypi.org/manage/account/publishing/ — with
+    #   Owner:           onegayunicorn
+    #   Repository:      conscious-subconscious
+    #   Workflow:        release.yml
+    #   Environment:     pypi
+    # Until that is configured, this job fails at the upload step with
+    # "invalid-publisher". No PyPI API token is stored in this repository, by
+    # design.
+    environment:
+      name: pypi
+      url: https://pypi.org/p/conscious-subconscious
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Show what will be published
+        run: ls -l dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1

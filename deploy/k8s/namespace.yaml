@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: conscious-subconscious
+  labels:
+    app.kubernetes.io/name: conscious-subconscious
+    app.kubernetes.io/part-of: conscious-subconscious
+    # Enforced by the NetworkPolicy in this directory: that policy admits
+    # ingress from the namespace carrying this label. Rename it here and the
+    # policy must be renamed with it.
+    cs-role: simulation
+  annotations:
+    # This namespace hosts a simulation service. It is not, and must never be
+    # described as, a clinical or medical system. See DISCLAIMER.md.
+    conscious-subconscious/classification: "educational-simulation"

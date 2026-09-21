@@ -1,0 +1,32 @@
+{
+  "name": "@conscious-subconscious/console",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "React console for the conscious-subconscious simulation service. Educational simulation only; not a medical device.",
+  "license": "MIT",
+  "scripts": {
+    "sync-locales": "node scripts/sync-locales.mjs",
+    "predev": "npm run sync-locales",
+    "dev": "vite",
+    "prebuild": "npm run sync-locales",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "pretest": "npm run sync-locales",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.3",
+    "vitest": "^2.0.2"
+  }
+}

@@ -1,0 +1,61 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# --- Node / web ---
+node_modules/
+.vite/
+*.tsbuildinfo
+apps/*/dist/
+apps/*/node_modules/
+# Locale catalogs are copied in from i18n/locales by scripts/sync-locales.mjs.
+apps/console/src/locales/
+# Brand assets and catalogs are copied in from media/ and i18n/ by
+# scripts/sync-assets.mjs in the site app.
+apps/site/src/assets/
+apps/site/src/locales/
+
+# --- Local runtime state ---
+*.sqlite3
+*.db
+runs/
+out/
+tmp/
+
+# --- Secrets (never commit real values) ---
+.env
+.env.local
+.env.*.local
+!.env.example
+*.pem
+*.key
+credentials.json
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+
+# --- Generated artefacts ---
+sbom.json
+sbom.spdx.json
+deploy/out/

@@ -1,0 +1,36 @@
+# Session export: validate a recorded session and write a compact summary.
+#
+# Deliberately simpler than telemetry_features.yaml — no resampling, no spectral
+# work, so it is fast enough to run on every recorded session as a sanity check.
+name: session_export
+version: "1"
+description: >
+  Validate a recorded session and export per-channel descriptive statistics.
+
+steps:
+  - name: raw
+    uses: load_csv
+    params:
+      path: samples/session.csv
+
+  - name: clean
+    uses: validate
+    needs: [raw]
+    params:
+      source: raw
+      min_rows: 1
+      max_duplicate_timestamps: 0
+
+  - name: features
+    uses: features
+    needs: [clean]
+    params:
+      source: clean
+
+  - name: out
+    uses: write_json
+    needs: [features]
+    params:
+      source: features
+      path: out/session_export.json
+      keys: [features, channels]

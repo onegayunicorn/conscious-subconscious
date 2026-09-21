@@ -1,0 +1,90 @@
+name: Bug report
+description: Something in the code, the CLI, the protocol or a deployment path does not work as documented.
+title: "[bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this.
+
+        **Before you continue:** this project is an educational and artistic
+        simulation. It is not a medical device and provides no medical advice.
+        Bug reports about health outcomes, healing rates or the correctness of
+        the model's biology cannot be triaged here — the model intentionally
+        encodes an unvalidated assumption. See the disclaimer in the repository
+        root.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `cs-sim version` (or the `conscious_subconscious.__version__` value).
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - CLI (cs-sim)
+        - Simulation engine / model layer
+        - Protocol layer (envelope, codecs, topics, JSON-RPC)
+        - Device adapters
+        - API service
+        - Web console
+        - Deployment (Docker, Kubernetes, systemd)
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Include the exact command or request, and the observed output.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: |
+        The most useful thing you can provide. For simulation issues, a full
+        `cs-sim` command line including `--seed`, `--dt`, `--horizon`, `--modules`
+        and every `--set` is usually enough, because runs are deterministic.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        Operating system, Python version (`python -V`), how you installed the
+        package (`pip install .` vs `pip install ".[api,dev]"`), and whether any
+        optional extras are present.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have not included any real credentials, sensor recordings or personal data in this report.
+          required: true
+        - label: This report does not ask the project to make or support a medical claim.
+          required: true

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-labelledby="scTitle scDesc">
+  <title id="scTitle">conscious-subconscious social card</title>
+  <desc id="scDesc">Project name, one-line positioning and disclaimer on a deep navy card with a homeostatic curve and focused signal pulse motif.</desc>
+
+  <rect x="0" y="0" width="1200" height="630" fill="#0B1C2C"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#F2A65A"/>
+
+  <circle cx="985" cy="195" r="95" fill="none" stroke="#123A5A" stroke-width="5" opacity="0.85"/>
+  <path d="M820 190 C870 140 940 140 990 190 S1090 240 1140 190"
+        fill="none" stroke="#7FD1C1" stroke-width="8" stroke-linecap="round"/>
+  <path d="M985 120 L985 165 L1000 190 L985 215 L985 275"
+        fill="none" stroke="#F2A65A" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="985" cy="190" r="8" fill="#F2A65A" stroke="#0B1C2C" stroke-width="4"/>
+
+  <text x="72" y="250" font-family="Inter, Helvetica, Arial, sans-serif" font-size="58" font-weight="600" fill="#E9EEF2">conscious-subconscious</text>
+  <text x="72" y="310" font-family="Inter, Helvetica, Arial, sans-serif" font-size="25" fill="#7FD1C1">An open sandbox for modelling the interaction between</text>
+  <text x="72" y="346" font-family="Inter, Helvetica, Arial, sans-serif" font-size="25" fill="#7FD1C1">autonomous repair and deliberate attention.</text>
+  <text x="72" y="400" font-family="IBM Plex Mono, Menlo, Consolas, monospace" font-size="16" fill="#E9EEF2" opacity="0.7">v0.1.0 &#183; MIT &#183; github.com/onegayunicorn/conscious-subconscious</text>
+
+  <line x1="72" y1="500" x2="1128" y2="500" stroke="#123A5A" stroke-width="2"/>
+  <text x="72" y="534" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#E9EEF2" opacity="0.72">Educational and artistic simulation only. Not a medical device, not clinical evidence, not medical advice.</text>
+  <text x="72" y="560" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#E9EEF2" opacity="0.72">No claim that attention heals tissue. The modelled mechanism is an unvalidated assumption.</text>
+</svg>

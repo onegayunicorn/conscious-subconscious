@@ -1,0 +1,146 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: python ${{ matrix.python }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # One failing cell must not hide the others: a platform-specific failure is
+      # exactly the kind of problem this matrix exists to surface.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python: ["3.10", "3.11", "3.12", "3.13"]
+        include:
+          # The OS dimension is deliberately narrower than the Python dimension.
+          # macOS and Windows are covered at the oldest and newest supported
+          # interpreters rather than at every version.
+          - os: macos-latest
+            python: "3.11"
+          - os: macos-latest
+            python: "3.13"
+          - os: windows-latest
+            python: "3.11"
+          - os: windows-latest
+            python: "3.13"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+
+      - name: Install core + api + dev extras
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[api,dev]"
+
+      - name: Lint (ruff)
+        run: python -m ruff check src tests tools
+
+      - name: Format check (ruff)
+        run: python -m ruff format --check src tests tools
+
+      - name: Typecheck (mypy, strict)
+        run: python -m mypy
+
+      - name: Tests with coverage
+        run: python -m pytest --cov --cov-report=term-missing --cov-report=xml
+
+      - name: Upload coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: warn
+
+  web:
+    name: web workspaces / node 20
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        workspace: ["apps/console", "apps/site"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
+
+      - name: Install
+        working-directory: ${{ matrix.workspace }}
+        run: npm ci
+
+      - name: Unit tests
+        if: matrix.workspace == 'apps/console'
+        working-directory: ${{ matrix.workspace }}
+        run: npm test
+
+      - name: Build
+        working-directory: ${{ matrix.workspace }}
+        run: npm run build
+
+  determinism:
+    name: determinism (same command twice must match)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install core only
+        # No extras: the engine must be reproducible in a bare interpreter.
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .
+
+      - name: Run cs-sim compare twice
+        run: |
+          mkdir -p out
+          cs-sim compare --out out/compare-a.md
+          cs-sim compare --out out/compare-b.md
+
+      - name: The two runs must be byte-identical
+        run: diff -u out/compare-a.md out/compare-b.md
+
+      - name: The two runs must report identical run digests
+        run: |
+          cs-sim compare --json --out out/a.json > /dev/null
+          cs-sim compare --json --out out/b.json > /dev/null
+          python -c "import json, sys; a = json.load(open('out/a.json')); b = json.load(open('out/b.json')); da = [r['digests']['run'] for r in a]; db = [r['digests']['run'] for r in b]; print('run digests:', da); sys.exit(0 if da == db else 'run digests differ: %r vs %r' % (da, db))"
+
+      - name: The control scenario must equal the baseline
+        # 'focused-uncoupled' sets conscious.neural_drive_coupling to 0.0, so the
+        # attention path is present but has no route into repair. If any REPAIR
+        # metric differs from 'baseline', something is leaking into the repair
+        # path, which is a bug rather than a finding.
+        #
+        # The comparison is deliberately restricted to repair metrics. Attention
+        # accounting (focus_hours, attention_spent, min_attention, fatigue_episodes,
+        # peak_neural_drive) legitimately differs: the control does hold attention,
+        # it just cannot act on the tissue. Comparing the whole metrics mapping
+        # would fail on those five keys and tell us nothing.
+        run: |
+          cs-sim compare --scenarios baseline focused-uncoupled --json --out out/control.json > /dev/null
+          python -c "import json, sys; runs = {r['scenario']: r['metrics'] for r in json.load(open('out/control.json'))}; keys = ('final_integrity', 'time_to_50pct_repair_hours', 'time_to_full_repair_hours', 'area_under_damage_integrity_hours', 'mean_integrity', 'total_repair', 'attention_attributable_repair', 'attention_attributable_fraction', 'peak_growth_factor'); d = {k: (runs['baseline'].get(k), runs['focused-uncoupled'].get(k)) for k in keys if runs['baseline'].get(k) != runs['focused-uncoupled'].get(k)}; print('repair metrics compared:', len(keys)); sys.exit(0 if not d else 'the coupling control is leaking into the repair path: %r' % d)"

@@ -1,0 +1,42 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# `make k8s-validate` dry-runs the raw directory:
+#   kubectl apply --dry-run=client -f deploy/k8s/ -R
+# which validates each manifest individually but does NOT apply kustomize
+# overlays. To validate the composed result:
+#   kubectl kustomize deploy/k8s/ | kubectl apply --dry-run=client -f -
+
+namespace: conscious-subconscious
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - deployment.yaml
+  - service.yaml
+  - hpa.yaml
+  - networkpolicy.yaml
+  - ingress.yaml
+  # secret.example.yaml is deliberately NOT listed. It contains only
+  # placeholders and must never be applied; create the real Secret out of band
+  # as described in that file and in deploy/README.md.
+
+images:
+  # The tag is rewritten here so that a release only has to change one line.
+  # deploy/docker/docker-compose.yml pins the same version for local use.
+  - name: ghcr.io/onegayunicorn/conscious-subconscious
+    newTag: "0.1.0"
+
+labels:
+  - includeSelectors: false
+    # includeSelectors is false on purpose: adding labels to selectors would
+    # change the Deployment's immutable selector, and would also break the
+    # NetworkPolicy's podSelector matching.
+    pairs:
+      app.kubernetes.io/part-of: conscious-subconscious
+      app.kubernetes.io/managed-by: kustomize
+      conscious-subconscious/classification: educational-simulation
+
+# No configMapGenerator and no secretGenerator: the ConfigMap is hand-written so
+# that it can be diffed against .env.example, and no secret is generated here at
+# all. Nothing in this repository produces a credential.

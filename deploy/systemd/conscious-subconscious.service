@@ -1,0 +1,100 @@
+# conscious-subconscious — scheduled reproducible run
+#
+# A oneshot unit, not a long-running daemon. The simulation is a batch job: it
+# reads parameters, runs to completion, writes a report and exits. There is
+# nothing to keep resident, and a process that is not running cannot be attacked.
+#
+# The unit is started by conscious-subconscious.timer, not by `systemctl start`
+# alone (both work; the timer is what makes it periodic).
+#
+# The API service, once it exists, would be a *separate* long-running unit and is
+# deliberately not defined here — this file must not be repurposed into an
+# always-on network service by editing a single line.
+#
+# Install:
+#   sudo install -m 0644 conscious-subconscious.service /etc/systemd/system/
+#   sudo install -m 0644 conscious-subconscious.timer   /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now conscious-subconscious.timer
+#
+# See deploy/systemd/README.md for the full procedure and for what has NOT been
+# verified.
+
+[Unit]
+Description=conscious-subconscious reproducible simulation run
+Documentation=https://github.com/onegayunicorn/conscious-subconscious
+Documentation=file:/usr/share/doc/conscious-subconscious/DISCLAIMER.md
+# This job is educational and artistic simulation only. It is not a medical
+# device and provides no medical advice.
+
+[Service]
+Type=oneshot
+# A dedicated, unprivileged system account:
+#   sudo useradd --system --home /var/lib/conscious-subconscious \
+#       --shell /usr/sbin/nologin conscious-subconscious
+User=conscious-subconscious
+Group=conscious-subconscious
+
+# ADJUST THIS PATH: it is the location of the virtualenv created for the service.
+# The Makefile's default venv is `.venv` inside a checkout, which is not where a
+# deployed unit would keep it.
+Environment=CS_VENV=/opt/conscious-subconscious/venv
+
+Environment=CS_DEFAULT_SEED=20260921
+Environment=CS_DEFAULT_DT_HOURS=0.05
+Environment=CS_DEFAULT_HORIZON_HOURS=72
+Environment=CS_LOG_LEVEL=INFO
+
+WorkingDirectory=/var/lib/conscious-subconscious
+StateDirectory=conscious-subconscious
+StateDirectoryMode=0750
+
+# A weekly horizon plus the one-factor sensitivity ranking, written to a
+# timestamped file so successive runs can be diffed. `interval` is the focus
+# policy from model/conscious.py; `week-long` is a built-in scenario.
+ExecStart=/bin/sh -c '\
+  exec "${CS_VENV}/bin/cs-sim" run --scenario week-long --report \
+    --out /var/lib/conscious-subconscious/out/run-%i.md'
+ExecStartPost=/bin/sh -c '\
+  exec "${CS_VENV}/bin/cs-sim" sensitivity \
+    --out /var/lib/conscious-subconscious/out/sensitivity-%i.md'
+
+# No network is required or permitted. The hardware adapters are read-only and
+# this job does not use them.
+RestrictAddressFamilies=AF_UNIX
+
+# --- Hardening -------------------------------------------------------------
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0027
+
+# ReadWritePaths is what makes ProtectSystem=strict usable: StateDirectory is
+# already writable, and this is the only other path the job needs.
+ReadWritePaths=/var/lib/conscious-subconscious
+
+MemoryMax=1G
+CPUQuota=200%
+TimeoutStartSec=600
+
+[Install]
+WantedBy=multi-user.target

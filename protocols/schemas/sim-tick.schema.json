@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/onegayunicorn/conscious-subconscious/protocols/schemas/sim-tick.schema.json",
+  "title": "sim.tick payload",
+  "description": "One simulation step, streamed to a console. Note the deliberate separation of actual and perceived progress: the two are different quantities and the model never conflates them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["t_hours", "integrity", "damage"],
+  "properties": {
+    "t_hours": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Virtual simulation time in hours."
+    },
+    "integrity": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Modelled tissue integrity as a fraction of the ceiling."
+    },
+    "damage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Remaining damage as a fraction, i.e. 1 - integrity where the ceiling is 1."
+    },
+    "attention": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Remaining attention budget."
+    },
+    "focused": {
+      "type": "boolean"
+    },
+    "fatigued": {
+      "type": "boolean"
+    },
+    "perceived_progress": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "How much progress the modelled mind believes it has made. Deliberately distinct from 'integrity'."
+    },
+    "applied_repair": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Integrity added by the repair rule during this step. The only quantity the subconscious system is allowed to write."
+    },
+    "mediators": {
+      "type": "object",
+      "additionalProperties": { "type": "number", "minimum": 0 },
+      "description": "Mediator channel values: growth_factor, cytokine, perfusion, neural_drive, atp."
+    },
+    "rates": {
+      "type": "object",
+      "additionalProperties": { "type": "number" },
+      "description": "Repair rate decomposition, including the attention-attributable component. A model decomposition, not a measurement."
+    }
+  }
+}

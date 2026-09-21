@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/onegayunicorn/conscious-subconscious/protocols/schemas/stream-sample.schema.json",
+  "title": "stream.sample payload",
+  "description": "One measured sample from a hardware adapter. Attached to the envelope with type 'stream.sample'.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["device", "channel", "value", "t_seconds"],
+  "properties": {
+    "device": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "description": "Device name as declared by its driver."
+    },
+    "channel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "description": "Channel within the device, e.g. 'heart_rate', 'hrv_index'."
+    },
+    "value": {
+      "type": "number",
+      "description": "Raw sample value in the channel's own unit. Never rescaled here; unit belongs to the channel descriptor."
+    },
+    "t_seconds": {
+      "type": "number",
+      "description": "Monotonic device time in seconds. Device time is not simulation time and the two are never mixed."
+    },
+    "unit": {
+      "type": "string",
+      "maxLength": 24
+    },
+    "quality": {
+      "type": "string",
+      "enum": ["ok", "suspect", "invalid"],
+      "description": "Sensor self-assessment. 'invalid' samples must not be fed to any module."
+    }
+  }
+}

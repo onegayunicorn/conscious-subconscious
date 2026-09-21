@@ -1,0 +1,68 @@
+# Local development stack.
+#
+#   docker compose -f deploy/docker/docker-compose.yml up --build
+#
+# (or `make docker-compose-up`).
+#
+# Build context is the repository root, two levels up from this file, because
+# the Dockerfile needs pyproject.toml, src/ and i18n/.
+#
+# Configuration comes from the repository's .env file, which is git-ignored and
+# does NOT exist by default. `required: false` is what makes this file safe to
+# commit: with no .env the stack still starts, using the safe defaults that are
+# baked into the image, and CS_API_KEY stays empty so the service (once it
+# exists) refuses to bind to a non-loopback interface. Nothing in this file
+# carries a secret value.
+
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: conscious-subconscious:0.1.0
+    env_file:
+      # Fails safely when .env is absent: compose skips the file instead of
+      # erroring, and the image's own defaults apply. Never replace this with a
+      # committed .env containing real values.
+      - path: ../../.env
+        required: false
+    environment:
+      # Container-internal paths and bind address, which must not be taken from
+      # a developer's local .env.
+      CS_DATA_DIR: /data
+      CS_HOST: 0.0.0.0
+      CS_PORT: "8080"
+      CS_LOCALES_DIR: /app/i18n/locales
+    ports:
+      # Bound to loopback on the host on purpose. Publish this on a public
+      # interface only behind a reverse proxy that terminates TLS and adds
+      # authentication, and only with CS_API_KEY set.
+      - "127.0.0.1:8080:8080"
+    volumes:
+      # Named volume for the SQLite data directory, so runs and recordings
+      # survive `docker compose down`.
+      - cs-data:/data
+    healthcheck:
+      # Mirrors the Dockerfile HEALTHCHECK but with compose-visible timing.
+      test:
+        - CMD
+        - python
+        - -c
+        - "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=2).status == 200 else 1)"
+      interval: 30s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+    # The container runs as UID 10001 (non-root) and its root filesystem is
+    # writable only where a volume is mounted. Do not add `privileged: true`,
+    # and do not mount the Docker socket.
+    init: true
+    read_only: false
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  cs-data:
+    # Local driver only. No cloud volume plugin, no syncing, no backups:
+    # this project does not move sensor data anywhere by itself.

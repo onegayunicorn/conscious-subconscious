@@ -1,0 +1,8 @@
+item,qty,part_notes,purpose,required,notes
+microcontroller,1,"ESP32 devkit (any ADC1-capable board works)","Runs the reference bridge firmware",yes,"An ESP8266 or AVR board will work after changing ANALOG_PIN and ADC_MAX"
+pulse_sensor,1,"Analog photoplethysmography sensor module","Provides the heart-rate signal",no,"Substituted by the `simulated` adapter for all software work"
+level_shifter,1,"Bidirectional 3.3V/5V or a two-resistor divider","Protects the ADC pin from a 5V sensor output",conditional,"Required only if the sensor output can exceed 3.3V; see ../wiring/README.md"
+breadboard_and_leads,1,"Half-size breadboard plus jumper leads","Wiring",no,
+usb_cable,1,"Data-capable USB cable matching the devkit","Flashes firmware and feeds the serial bridge",yes,"Charge-only cables are a common and confusing failure"
+optionals_ble_monitor,1,"BLE heart-rate monitor that exposes the standard 0x2A37 characteristic","Alternative to the wired sensor",no,"Used by the ble-heart-rate adapter; parsing is tested without a radio"
+optionals_lsl_hardware,1,"Any Lab Streaming Layer capable amplifier","EEG or physiological recording",no,"Used by the lsl adapter; requires pylsl"

@@ -1,0 +1,157 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conscious-subconscious"
+version = "0.1.0"
+description = "A reproducible simulation sandbox for modelling subconscious (homeostatic) and conscious (attentional) processes during tissue repair."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "onegayunicorn" }]
+keywords = [
+    "simulation",
+    "reproducibility",
+    "cognitive-architecture",
+    "biofeedback",
+    "open-science",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Simulation",
+    "Typing :: Typed",
+]
+
+# The simulation core has NO third-party runtime dependencies on purpose.
+# Everything below is opt-in, so `pip install conscious-subconscious` stays tiny
+# and the engine keeps working in a bare interpreter.
+dependencies = []
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pydantic>=2.6",
+]
+devices = [
+    "pyserial>=3.5",
+    "pylsl>=1.16",
+    "bleak>=0.22",
+]
+science = [
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.4",
+    "mypy>=1.10",
+    "build>=1.2",
+    "jsonschema>=4.21",
+]
+all = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pydantic>=2.6",
+    "pyserial>=3.5",
+    "pylsl>=1.16",
+    "bleak>=0.22",
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+]
+
+[project.scripts]
+cs-sim = "conscious_subconscious.sim.cli:main"
+cs-hardening = "conscious_subconscious.hardening.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/onegayunicorn/conscious-subconscious"
+Issues = "https://github.com/onegayunicorn/conscious-subconscious/issues"
+Changelog = "https://github.com/onegayunicorn/conscious-subconscious/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+conscious_subconscious = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "golden: compares engine output against a committed reference run",
+    "slow: takes more than a couple of seconds",
+]
+filterwarnings = ["error::DeprecationWarning:conscious_subconscious.*"]
+
+[tool.coverage.run]
+source = ["conscious_subconscious"]
+branch = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+# Rule selection is deliberately conservative. The stylistic families (SIM, RET,
+# C4, PTH, ARG) mostly flagged preferences and framework-mandated signatures
+# here, and a lint config full of `# noqa` comments is a lint config nobody
+# reads. Correctness-adjacent families (E/F/W/B/UP/I) are enforced and clean.
+[tool.ruff.lint]
+select = [
+    "E", "F", "W",   # pycodestyle / pyflakes
+    "I",             # isort
+    "UP",            # pyupgrade
+    "B",             # flake8-bugbear
+]
+ignore = [
+    "B008",  # FastAPI's Depends()/Query() in argument defaults is the documented idiom
+    "E501",  # line length is enforced by `ruff format`, which runs in the same hook
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ARG001", "ARG002"]
+
+# Type checking is strict for the dependency-free core, and relaxed for the
+# layers that exist to talk to things this project does not control (HTTP
+# frameworks, serial ports, radios). Checking the second group strictly would
+# mostly measure how well third-party stubs are written.
+[tool.mypy]
+python_version = "3.10"
+mypy_path = "src"
+files = ["src/conscious_subconscious"]
+packages = []
+strict = true
+disallow_untyped_decorators = false
+# `warn_unreachable` produces false positives from `in`-operator narrowing
+# (`"method" in message` followed by an `elif`), which makes the validator
+# functions unpleasantly noisy for no real gain.
+warn_unreachable = false
+
+[[tool.mypy.overrides]]
+module = [
+    "conscious_subconscious.services.*",
+    "conscious_subconscious.pipelines.*",
+    "conscious_subconscious.devices.serial_bridge",
+    "conscious_subconscious.devices.lsl_device",
+    "conscious_subconscious.devices.ble_heart_rate",
+    "conscious_subconscious.pipelines.runner",
+    "serial.*",
+    "pylsl.*",
+    "bleak.*",
+    "fastapi.*",
+    "yaml.*",
+]
+ignore_missing_imports = true
+disallow_untyped_defs = false
+warn_return_any = false
